@@ -76,16 +76,14 @@ public:
     int nLineY = (nLines >> 1) * 10 + y;
     if (it_a != mapAsm.end())
     {
-      DrawString("CODE: "+(*it_a).second, x,y, 10, BLACK);
       DrawString((*it_a).second, x, nLineY, 10, BLACK);
       while (nLineY < (nLines * 10) + y)
       {
         nLineY += 10;
         if (++it_a != mapAsm.end())
         {
-          std::cout << (*it_a).second << "\n";
 
-          DrawString("CODE: "+(*it_a).second, x, nLineY, 10, BLACK);
+          DrawString((*it_a).second, x, nLineY, 10, BLACK);
         }
       }
     }
@@ -146,10 +144,7 @@ public:
 
     // Extract dissassembly
     mapAsm = nes.cpu.disassemble(0x0000, 0xFFFF);
-    for (auto a : mapAsm)
-    {
-      std::cout << a.first << a.second << "\n";
-    }
+    
 
     // Reset
     nes.cpu.reset();
@@ -181,7 +176,7 @@ public:
     DrawRam(2, 2, 0x0000, 16, 16);
     DrawRam(2, 182, 0x8000, 16, 16);
     DrawCpu(448, 2);
-    DrawCode(448, 72, 26);
+    DrawCode(448, 72, 30);
 
     DrawString("SPACE = Step Instruction    R = RESET    I = IRQ    N = NMI", 10, 370, 10, BLACK);
 
@@ -196,6 +191,7 @@ int main()
   InitWindow(screenWidth, screenHeight, "olc6502 Demonstration");
   Demo_olc6502 demo;
   SetTargetFPS(60);
+  demo.OnUserCreate();
   while (!WindowShouldClose())
   {
     BeginDrawing();
