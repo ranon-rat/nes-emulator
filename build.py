@@ -1,11 +1,29 @@
 #https://github.com/ranon-rat/moonmake
 import moonmake as mmake
 from os.path import join
-import moonmake as mmake
-from os.path import join
+
+import platform
+import sys
 dir_path =mmake.get_dir(__file__)
 # Lista los archivos en el directorio
-if __name__=="__main__":
+
+
+def get_raylib_url():
+    system = platform.system()
+    if system == "Windows":
+        return "https://github.com/raysan5/raylib/releases/download/5.5/raylib-5.5_win32_mingw-w64.zip"
+    elif system == "Darwin":  # macOS
+        return "https://github.com/raysan5/raylib/releases/download/5.5/raylib-5.5_macos.tar.gz"
+    elif system == "Linux":
+        return "https://github.com/raysan5/raylib/releases/download/5.5/raylib-5.5_linux_amd64.tar.gz"
+    else:
+        raise Exception(f"Unsupported system: {system}")
+def install():
+    raylib_url=get_raylib_url()
+
+    mmake.download_dependency(raylib_url,"raylib",".moonmake/dependencies")
+    pass
+def execute():
     moonmake_dir=".moonmake"
     CPP_VERSION="2b"
     INCLUDE=f"{mmake.join_with_flag([join(".",moonmake_dir,"dependencies","headers")],"-I")} -I{join(dir_path,"src","include")}"
@@ -34,3 +52,7 @@ if __name__=="__main__":
     main.watch(lib_obj,list(map(lambda r:join(".","src","lib",r),lib_files)),f"g++ -c $< -o $@ {FLAGS} {INCLUDE}")
 
     main.compile_all()
+if __name__=="__main__":
+    mmake.arguments_cmd(sys.argv,execute,install)
+
+    
