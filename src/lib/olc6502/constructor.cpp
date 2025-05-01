@@ -269,3 +269,4 @@ Olc6502::Olc6502()
 // i am defining the functions, plus moonmake allows me to have this kind of structure :)
 
 
+Olc6502::~Olc6502(){}

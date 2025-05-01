@@ -1,3 +1,4 @@
+#pragma once
 #ifndef BUS_6502
 #define BUS_6502
 #include <cstdint>

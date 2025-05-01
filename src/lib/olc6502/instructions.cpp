@@ -3,7 +3,7 @@
 #include "consts.h++"
 #include "utils.h++"
 // INSTRUCTIONS
-uint8_t Olc6502::fetch()
+uint8_t Olc6502::fetch() // funciona
 {
     if (!(m_lookup[opcode].addrmode == &Olc6502::IMP))
     {
@@ -12,7 +12,7 @@ uint8_t Olc6502::fetch()
     return fetched;
 }
 // logical gates
-uint8_t Olc6502::AND()
+uint8_t Olc6502::AND() // and
 {
     fetch();
     acc_r = acc_r & fetched;
@@ -56,7 +56,7 @@ uint8_t Olc6502::ASL()
     fetch();
     uint16_t temp = (uint16_t)fetched << 1;
     SetFlag(C, (temp & PAGE_BYTE_PART) > 0);
-    check_unused_or_negative((temp & OFFSET_BYTE_PART));
+    check_unused_or_negative(temp & OFFSET_BYTE_PART);
     if (m_lookup[opcode].addrmode == &Olc6502::IMP)
         acc_r = temp & OFFSET_BYTE_PART;
     else
@@ -206,7 +206,7 @@ uint8_t Olc6502::ADC()
     //       Positive Number + Positive Number = Positive Result -> OK! No Overflow
     //       Negative Number + Negative Number = Negative Result -> OK! NO Overflow
 
-    SetFlag(V, (~((uint16_t)acc_r ^ (uint16_t)fetched) & ((uint16_t)acc_r ^ (uint16_t)temp)) & 0x0080);
+	SetFlag(V, (~((uint16_t)acc_r ^ (uint16_t)fetched) & ((uint16_t)acc_r ^ (uint16_t)temp)) & 0x0080);
     acc_r = temp & OFFSET_BYTE_PART;
     return 1;
 }
@@ -222,8 +222,8 @@ uint8_t Olc6502::SBC()
     uint16_t temp = (uint16_t)acc_r + (uint16_t)value + (uint16_t)GetFlag(C);
     SetFlag(C, temp > 255);
     check_unused_or_negative(temp & OFFSET_BYTE_PART);
+	SetFlag(V, (temp ^ (uint16_t)acc_r) & (temp ^ value) & 0x0080);
 
-    SetFlag(V, (~((uint16_t)acc_r ^ (uint16_t)value) & ((uint16_t)acc_r ^ (uint16_t)temp)) & 0x0080);
     acc_r = temp & OFFSET_BYTE_PART;
 
     // first if etch the data
@@ -320,18 +320,28 @@ uint8_t Olc6502::RTI()
     status_r &= ~B;
     status_r &= ~U;
     stkp_r++;
+    // aqui tecnicamente esta sacando el high y el low
+
+    // podria hacer lo siguiente creo?
+    uint16_t low=read(STACK_MEMORY_BASE+stkp_r);
+    stkp_r++;   
+    uint16_t high=read(STACK_MEMORY_BASE+stkp_r);
+    pc_r=Utils::combine2bytes(high,low);
+    /*
     pc_r = (uint16_t)read(STACK_MEMORY_BASE + stkp_r);
     stkp_r++;
     pc_r |= (uint16_t)read(STACK_MEMORY_BASE + stkp_r) << 8;
+    */
     return 0;
 }
 uint8_t Olc6502::RTS()
 {
-    stkp_r++;
-    pc_r = (uint16_t)read(STACK_MEMORY_BASE + stkp_r);
-    stkp_r++;
-    pc_r |= (uint16_t)read(STACK_MEMORY_BASE + stkp_r) << 8;
 
+    stkp_r++;
+    uint16_t low=(uint16_t)read(STACK_MEMORY_BASE + stkp_r);
+    stkp_r++;
+    uint16_t high=read(STACK_MEMORY_BASE + stkp_r);
+    pc_r |= Utils::combine2bytes(high,low);
     pc_r++;
     return 0;
 }
