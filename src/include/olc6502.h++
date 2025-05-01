@@ -81,10 +81,14 @@ public:
     uint16_t addr_rel = 0x00; // absolute address following a branch?
     uint8_t opcode = 0x00; // instruction byte
     uint8_t cycles = 0; // the number of cycles it will take an instruction to execute
-public: // utils
+private: // utils
 
-    void general_branching();
-    void general_interrupt_request(uint16_t stack_checking,uint8_t cy);
+void general_branching();
+void general_interrupt_request(uint16_t stack_checking,uint8_t cy);
+void  generalized_rotator(uint16_t temp,uint16_t carrier);
+uint8_t general_compare(uint8_t reg);
+void check_unused_or_negative(uint8_t value);
+
 
 private:
     Bus *m_bus = nullptr;

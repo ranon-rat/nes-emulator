@@ -57,3 +57,20 @@ uint8_t Olc6502::GetFlag(FLAG6502 f)
 {
 	return ((status_r & f) > 0) ? 1 : 0;
 }
+
+
+void Olc6502::check_unused_or_negative(uint8_t value){
+    SetFlag(Z, value == 0x00);
+    SetFlag(N, value & 0x80);
+}
+
+
+void Olc6502::generalized_rotator(uint16_t temp, uint16_t carrier)
+{
+    SetFlag(C, fetched & carrier);
+    check_unused_or_negative(temp & OFFSET_BYTE_PART);
+    if (m_lookup[opcode].addrmode == &Olc6502::IMP)
+        acc_r = temp & OFFSET_BYTE_PART;
+    else
+        write(addr_abs, temp & OFFSET_BYTE_PART);
+}
