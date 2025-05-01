@@ -1,4 +1,6 @@
 #include "bus.h++"
+#pragma GCC diagnostic ignored "-Wtype-limits"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 
 Bus::Bus()
 {

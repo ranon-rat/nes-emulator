@@ -262,3 +262,10 @@ Olc6502::Olc6502()
             {"???", &a::XXX, &a::IMP, 7},
         };
 }
+
+// why writting it here?
+
+// well, its quite long,a nd its a simple constnat, i dont think that is wise to just keep it in the file where 
+// i am defining the functions, plus moonmake allows me to have this kind of structure :)
+
+

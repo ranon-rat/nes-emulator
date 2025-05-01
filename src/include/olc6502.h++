@@ -3,6 +3,9 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include "utils.h++"
+#include "consts.h++"
+
 class Bus;
 class Olc6502
 {
