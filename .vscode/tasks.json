@@ -10,7 +10,8 @@
                 "${file}",
                 "-o",
                 "${fileDirname}\\${fileBasenameNoExtension}.exe",
-                "-I./src/include"
+                "-I./src/include",
+                "-I./.moonmake/dependencies/headers"
             ],
             "options": {
                 "cwd": "${fileDirname}",
