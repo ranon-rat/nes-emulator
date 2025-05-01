@@ -36,7 +36,17 @@ uint8_t Olc6502::EOR()
 }
 uint8_t Olc6502::NOP()
 {
-    // TODO: IMPLEMENT THIS LATER
+    switch (opcode)
+    {
+    case 0x1C:
+    case 0x3C:
+    case 0x5C:
+    case 0x7C:
+    case 0xDC:
+    case 0xFC:
+        return 1;
+        break;
+    }
     return 0;
 }
 
@@ -533,21 +543,23 @@ uint8_t Olc6502::TSX()
     check_unused_or_negative(x_r);
     return 0;
 }
-uint8_t Olc6502::TXA(){
+uint8_t Olc6502::TXA()
+{
     // transfers x register to accumulator
-    acc_r=x_r;
+    acc_r = x_r;
     check_unused_or_negative(acc_r);
     return 0;
 }
 
-
-uint8_t Olc6502::TXS(){
-    stkp_r=x_r;
+uint8_t Olc6502::TXS()
+{
+    stkp_r = x_r;
     return 0;
 }
 
-uint8_t Olc6502::TYA(){
-    acc_r=y_r;
+uint8_t Olc6502::TYA()
+{
+    acc_r = y_r;
     check_unused_or_negative(acc_r);
     return 0;
 }
