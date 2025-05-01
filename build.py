@@ -29,14 +29,12 @@ def execute():
     INCLUDE=f"{mmake.join_with_flag([join(".",moonmake_dir,"dependencies","headers")],"-I")} -I{join(".",dir_path,"src","include")}"
     FLAGS=f"-Wall -Wextra -std=c++{CPP_VERSION}"
     LINK=f"{mmake.join_with_flag([join(moonmake_dir,"dependencies","lib")],"-L")} -L{join(dir_path,moonmake_dir,"lib")}"
-    print(INCLUDE)
     extension=mmake.get_extension()
     main=mmake.Builder()
     static_a_files=mmake.discover(join(".",moonmake_dir,"dependencies","lib"),".a")
     
     STATIC_LIBRARY=" ".join([f"-l{mmake.strip_lib_prefix(a).replace(".a","")}" for a in static_a_files]+["-lgdi32 ","-lwinmm"])
     static_watch_file=[join(moonmake_dir,"dependencies","lib",a) for a in static_a_files]
-    print(static_a_files,STATIC_LIBRARY)
     headers=mmake.discover(join(dir_path,"src","include"),".h++")
     target_files=list([f for f in  mmake.discover(join(dir_path,"src","target"),".cpp")])
     target_obj=mmake.change_extension(target_files,join(dir_path,moonmake_dir,"obj","target"),old=".cpp",new=".o")
