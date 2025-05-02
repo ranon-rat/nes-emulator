@@ -19,4 +19,4 @@ $python3 build.py
 
 # 6502 emulator
 
-![6502](images\6502-emulator.png)
+![6502](images/6502-emulator.png)
