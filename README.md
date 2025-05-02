@@ -7,3 +7,16 @@ One of the best channels on youtube for learning more recreational programming.
 
 
 To compile this project you will need to install [moonmake](https://github.com/ranon-rat/moonmake) on your computer, the readme has a really simple explanation and a series of commands that you can just execute to install moonmake on your system.
+
+# Build
+You only need to execute this commands.
+If there is any error that you encounter, please notify me so i can change the build file :)
+```sh
+
+$python3 build.py install
+$python3 build.py
+```
+
+# 6502 emulator
+
+![6502](images\6502-emulator.png)
