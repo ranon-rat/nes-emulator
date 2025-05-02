@@ -103,7 +103,7 @@ public:
     }
   }
 
-  bool OnUserCreate()
+  void Setup()
   {
     // Load Program (assembled at https://www.masswerk.at/6502/assembler.html)
     /*
@@ -148,11 +148,12 @@ public:
 
     // Reset
     nes.cpu.reset();
-    return true;
   }
 
-  bool OnUserUpdate()
+  void Draw()
   {
+    BeginDrawing();
+
     ClearBackground(RAYWHITE);
 
     if (IsKeyPressed(KEY_SPACE))
@@ -179,8 +180,8 @@ public:
     DrawCode(448, 72, 26);
 
     DrawString("SPACE = Step Instruction    R = RESET    I = IRQ    N = NMI", 10, 370, 10, BLACK);
+    EndDrawing();
 
-    return true;
   }
 };
 
@@ -191,12 +192,10 @@ int main()
   InitWindow(screenWidth, screenHeight, "olc6502 Demonstration");
   Demo_olc6502 demo;
   SetTargetFPS(60);
-  demo.OnUserCreate();
+  demo.Setup();
   while (!WindowShouldClose())
   {
-    BeginDrawing();
-    demo.OnUserUpdate();
-    EndDrawing();
+    demo.Draw();
   }
   CloseWindow();
   return 0;
