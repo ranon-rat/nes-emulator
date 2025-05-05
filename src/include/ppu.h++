@@ -36,7 +36,7 @@ public: // interface
     void clock();
 
 private:
-    Color palScreen[0x40];
+    std::array<Color,0x40>palScreen;
     std::array<char, SCREEN_WIDTH * SCREEN_HEIGHT * 4> sprScreen;                     // 256,240
     std::array<std::array<char, SCREEN_WIDTH * SCREEN_HEIGHT * 4>, 2> sprNameTable;   // 256,240
     std::array<std::array<char, PATTERN_SIZE * PATTERN_SIZE * 4>, 2> srpPatternTable; // 128*128
