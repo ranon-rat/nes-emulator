@@ -1,22 +1,24 @@
-# Nes emulator.
+# NES Emulator
 
+This is a simple NES emulator project based on the excellent YouTube series [NES Emulator from Scratch](https://www.youtube.com/watch?v=nViZg02IMQo&list=PLrOv9FMX8xJHqMvSGB_9G9nZZ_4IgteYf) by [javidx9](https://www.youtube.com/@javidx9), one of the best channels for learning recreational programming.
 
-This is a simple proyect that its based on the Series [Nes emulator from scratch](https://www.youtube.com/watch?v=nViZg02IMQo&list=PLrOv9FMX8xJHqMvSGB_9G9nZZ_4IgteYf) made by [javidx9](https://www.youtube.com/@javidx9).
+## Requirements
 
-One of the best channels on youtube for learning more recreational programming.
+To compile and run this project, you’ll need to install [moonmake](https://github.com/ranon-rat/moonmake). The repository provides clear installation instructions—just follow the listed commands to get it set up on your system.
 
+## Build Instructions
 
-To compile this project you will need to install [moonmake](https://github.com/ranon-rat/moonmake) on your computer, the readme has a really simple explanation and a series of commands that you can just execute to install moonmake on your system.
+To build the project, simply run the following commands:
 
-# Build
-You only need to execute this commands.
-If there is any error that you encounter, please notify me so i can change the build file :)
 ```sh
-
-$python3 build.py install
-$python3 build.py
+python3 build.py install
+python3 build.py
 ```
 
-# 6502 emulator
+If you encounter any issues during the build process, feel free to report them so I can update the build script accordingly.
+
+
+
+## 6502 emulator
 
 ![6502](images/6502-emulator.png)
