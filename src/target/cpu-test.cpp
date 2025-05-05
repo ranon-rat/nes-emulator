@@ -41,14 +41,14 @@ public:
         nAddr += 1;
       }
       DrawString(sOffset, nRamX, nRamY, FONT_SIZE, BLACK);
-      nRamY += 10;
+      nRamY += FONT_SIZE;
     }
   }
   void DrawTextI(std::string text, int x, int y, int fontSize, Color color)
   {
-    DrawTextEx(unscii, text.c_str(), {(float)x, (float)y}, fontSize,0.5,color);
+    DrawTextEx(unscii, text.c_str(), {(float)x, (float)y}, fontSize, 0.5, color);
   }
- void DrawString(std::string text, int x, int y, int fontSize, Color color)
+  void DrawString(std::string text, int x, int y, int fontSize, Color color)
   {
     DrawTextEx(unscii, text.c_str(), {(float)x, (float)y}, fontSize, 0.5, color);
   }
@@ -67,7 +67,7 @@ public:
     this->DrawTextI("Z", x + 160, y, FONT_SIZE, nes.cpu.status_r & Olc6502::Z ? GREEN : RED);
     this->DrawTextI("C", x + 178, y, FONT_SIZE, nes.cpu.status_r & Olc6502::C ? GREEN : RED);
 
-    DrawString("PC: $" + hex(nes.cpu.pc_r, 4), x, y + 10, FONT_SIZE, BLACK);
+    DrawString("PC: $" + hex(nes.cpu.pc_r, 4), x, y + FONT_SIZE, FONT_SIZE, BLACK);
     DrawString("A: $" + hex(nes.cpu.acc_r, 2) + "  [" + std::to_string(nes.cpu.acc_r) + "]", x, y + 20, FONT_SIZE, BLACK);
     DrawString("X: $" + hex(nes.cpu.x_r, 2) + "  [" + std::to_string(nes.cpu.x_r) + "]", x, y + 30, FONT_SIZE, BLACK);
     DrawString("Y: $" + hex(nes.cpu.y_r, 2) + "  [" + std::to_string(nes.cpu.y_r) + "]", x, y + 40, FONT_SIZE, BLACK);
@@ -78,13 +78,13 @@ public:
   {
     auto it_a = mapAsm.find(nes.cpu.pc_r);
 
-    int nLineY = (nLines >> 1) * 10 + y;
+    int nLineY = (nLines >> 1) * FONT_SIZE + y;
     if (it_a != mapAsm.end())
     {
       DrawString((*it_a).second, x, nLineY, FONT_SIZE, BLACK);
-      while (nLineY < (nLines * 10) + y)
+      while (nLineY < (nLines * FONT_SIZE) + y)
       {
-        nLineY += 10;
+        nLineY += FONT_SIZE;
         if (++it_a != mapAsm.end())
         {
 
@@ -94,15 +94,15 @@ public:
     }
 
     it_a = mapAsm.find(nes.cpu.pc_r);
-    nLineY = (nLines >> 1) * 10 + y;
+    nLineY = (nLines >> 1) * FONT_SIZE + y;
     if (it_a != mapAsm.end())
     {
       while (nLineY > y)
       {
-        nLineY -= 10;
+        nLineY -= FONT_SIZE;
         if (--it_a != mapAsm.end())
         {
-          DrawString((*it_a).second, x, nLineY, FONT_SIZE/1, {.r=150,.g=0,.b=150,.a=100});
+          DrawString((*it_a).second, x, nLineY, FONT_SIZE / 1, {.r = 150, .g = 0, .b = 150, .a = 255});
         }
       }
     }
@@ -172,6 +172,7 @@ public:
     DrawCode(516, 72, 26);
     Image screen_buffer = nes.ppu.GetScreen();
     Texture2D screen = LoadTextureFromImage(screen_buffer);
+
     defer([&]()
           { UnloadTexture(screen); });
     DrawTextureEx(screen, {0, 0}, 0.0f, 2.0f, WHITE);
