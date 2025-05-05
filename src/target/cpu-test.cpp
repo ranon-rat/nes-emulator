@@ -3,8 +3,8 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-
 #include "bus.h++"
+#include "utils.h++"
 
 void DrawString(std::string text, int x, int y, int fontSize, Color color)
 {
@@ -167,10 +167,11 @@ public:
     DrawCpu(516, 2);
     DrawCode(516, 72, 26);
     Image screen_buffer = nes.ppu.GetScreen();
-    Texture2D screen = LoadTextureFromImage(screen_buffer); // Sube a la GPU (VRAM)
-    DrawTextureEx(screen, {0, 0}, 0.0f, 2.0f, WHITE); // Dibuja la textura en la pantalla
-    //UnloadTexture(screen); // Libera la memoria de la GPU (VRAM)
+    Texture2D screen = LoadTextureFromImage(screen_buffer); 
+    defer([&](){ UnloadTexture(screen); }); 
+    DrawTextureEx(screen, {0, 0}, 0.0f, 2.0f, WHITE);    
     EndDrawing();
+
   }
 };
 
@@ -191,5 +192,7 @@ int main()
     demo.Draw(GetFrameTime());
   }
   CloseWindow();
+
+
   return 0;
 }
