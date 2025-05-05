@@ -168,8 +168,8 @@ public:
     DrawCode(516, 72, 26);
     Image screen_buffer = nes.ppu.GetScreen();
     Texture2D screen = LoadTextureFromImage(screen_buffer); // Sube a la GPU (VRAM)
-    DrawTexture(screen, 0, 0, WHITE);
-
+    DrawTextureEx(screen, {0, 0}, 0.0f, 2.0f, WHITE); // Dibuja la textura en la pantalla
+    //UnloadTexture(screen); // Libera la memoria de la GPU (VRAM)
     EndDrawing();
   }
 };
