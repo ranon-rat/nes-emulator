@@ -1,5 +1,6 @@
 
-#include "olc6502.h++"
+#include "cpu.h++"
+
 #include "consts.h++"
 #include "utils.h++"
 // INSTRUCTIONS

@@ -1,4 +1,5 @@
-#include "olc6502.h++"
+#include "cpu.h++"
+
 #include "bus.h++"
 #include "utils.h++"
 #include "consts.h++"
@@ -6,12 +7,12 @@
 
 uint8_t Olc6502::read(uint16_t address)
 {
-    return m_bus->read(address);
+    return m_bus->cpuRead(address);
 }
 
 void Olc6502::write(uint16_t address, uint8_t data)
 {
-    m_bus->write(address, data);
+    m_bus->cpuWrite(address, data);
 }
 
 

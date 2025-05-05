@@ -11,7 +11,8 @@
                 "-o",
                 "${fileDirname}\\${fileBasenameNoExtension}.exe",
                 "-I./src/include",
-                "-I./.moonmake/dependencies/headers"
+                "-I./.moonmake/dependencies/headers",
+                "-std=c++2b"
             ],
             "options": {
                 "cwd": "${fileDirname}",

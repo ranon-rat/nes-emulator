@@ -1,4 +1,5 @@
-#include "olc6502.h++"
+#include "cpu.h++"
+
 #include "utils.h++"
 #include "consts.h++"
 

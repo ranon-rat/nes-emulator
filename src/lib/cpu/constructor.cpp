@@ -1,4 +1,5 @@
-#include "olc6502.h++"
+#include "cpu.h++"
+
 Olc6502::Olc6502()
 {
     using a = Olc6502;
