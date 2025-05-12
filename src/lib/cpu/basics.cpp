@@ -5,18 +5,18 @@
 #include "consts.h++"
 #pragma GCC diagnostic ignored "-Wreturn-type"
 
-uint8_t Olc6502::read(uint16_t address)
+uint8_t Cpu6502::read(uint16_t address)
 {
     return m_bus->cpuRead(address);
 }
 
-void Olc6502::write(uint16_t address, uint8_t data)
+void Cpu6502::write(uint16_t address, uint8_t data)
 {
     m_bus->cpuWrite(address, data);
 }
 
 
-void Olc6502::clock()
+void Cpu6502::clock()
 {
     if (cycles == 0)
     {
@@ -30,7 +30,7 @@ void Olc6502::clock()
     cycles--;
 }
 
-void Olc6502::SetFlag(Olc6502::FLAG6502 f, bool v)
+void Cpu6502::SetFlag(Cpu6502::FLAG6502 f, bool v)
 {
     if (v)
     {
@@ -54,23 +54,23 @@ void Olc6502::SetFlag(Olc6502::FLAG6502 f, bool v)
     // 0b01000000 // okay yes it will delete a specific bit :)
     status_r &= ~f;
 }
-uint8_t Olc6502::GetFlag(FLAG6502 f)
+uint8_t Cpu6502::GetFlag(FLAG6502 f)
 {
 	return ((status_r & f) > 0) ? 1 : 0;
 }
 
 
-void Olc6502::check_unused_or_negative(uint8_t value){
+void Cpu6502::check_unused_or_negative(uint8_t value){
     SetFlag(Z, value == 0x00);
     SetFlag(N, value & 0x80);
 }
 
 
-void Olc6502::generalized_rotator(uint16_t temp, uint16_t carrier)
+void Cpu6502::generalized_rotator(uint16_t temp, uint16_t carrier)
 {
     SetFlag(C, fetched & carrier);
     check_unused_or_negative(temp & OFFSET_BYTE_PART);
-    if (m_lookup[opcode].addrmode == &Olc6502::IMP)
+    if (m_lookup[opcode].addrmode == &Cpu6502::IMP)
         acc_r = temp & OFFSET_BYTE_PART;
     else
         write(addr_abs, temp & OFFSET_BYTE_PART);

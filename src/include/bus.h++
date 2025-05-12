@@ -14,8 +14,8 @@ public:
     ~Bus();
 
 public:
-    Olc6502 cpu;
-    Olc2c02 ppu;
+    Cpu6502 cpu;
+    Pppu2c02 ppu;
 
     std::array<uint8_t, 2 * KILOBYTE_SIZE> cpuRam;
 

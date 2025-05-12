@@ -5,7 +5,7 @@
 #include "consts.h++"
 
 
-bool Olc6502::complete()
+bool Cpu6502::complete()
 {
 	return cycles == 0;
 }
@@ -14,7 +14,7 @@ bool Olc6502::complete()
 // It is merely a convenience function to turn the binary instruction code into
 // human readable form. Its included as part of the emulator because it can take
 // advantage of many of the CPUs internal operations to do this.
-std::map<uint16_t, std::string> Olc6502::disassemble(uint16_t nStart, uint16_t nStop)
+std::map<uint16_t, std::string> Cpu6502::disassemble(uint16_t nStart, uint16_t nStop)
 {
 	uint32_t addr = nStart;
 	uint8_t value = 0x00, lo = 0x00, hi = 0x00;
@@ -56,70 +56,70 @@ std::map<uint16_t, std::string> Olc6502::disassemble(uint16_t nStart, uint16_t n
 		// routines mimmick the actual fetch routine of the
 		// 6502 in order to get accurate data as part of the
 		// instruction
-		if (m_lookup[opcode].addrmode == &Olc6502::IMP)
+		if (m_lookup[opcode].addrmode == &Cpu6502::IMP)
 		{
 			sInst += " {IMP}";
 		}
-		else if (m_lookup[opcode].addrmode == &Olc6502::IMM)
+		else if (m_lookup[opcode].addrmode == &Cpu6502::IMM)
 		{
 			value = m_bus->cpuRead(addr, true); addr++;
 			sInst += "#$" + hex(value, 2) + " {IMM}";
 		}
-		else if (m_lookup[opcode].addrmode == &Olc6502::ZP0)
+		else if (m_lookup[opcode].addrmode == &Cpu6502::ZP0)
 		{
 			lo = m_bus->cpuRead(addr, true); addr++;
 			hi = 0x00;												
 			sInst += "$" + hex(lo, 2) + " {ZP0}";
 		}
-		else if (m_lookup[opcode].addrmode == &Olc6502::ZPX)
+		else if (m_lookup[opcode].addrmode == &Cpu6502::ZPX)
 		{
 			lo = m_bus->cpuRead(addr, true); addr++;
 			hi = 0x00;														
 			sInst += "$" + hex(lo, 2) + ", X {ZPX}";
 		}
-		else if (m_lookup[opcode].addrmode == &Olc6502::ZPY)
+		else if (m_lookup[opcode].addrmode == &Cpu6502::ZPY)
 		{
 			lo = m_bus->cpuRead(addr, true); addr++;
 			hi = 0x00;														
 			sInst += "$" + hex(lo, 2) + ", Y {ZPY}";
 		}
-		else if (m_lookup[opcode].addrmode == &Olc6502::IZX)
+		else if (m_lookup[opcode].addrmode == &Cpu6502::IZX)
 		{
 			lo = m_bus->cpuRead(addr, true); addr++;
 			hi = 0x00;								
 			sInst += "($" + hex(lo, 2) + ", X) {IZX}";
 		}
-		else if (m_lookup[opcode].addrmode == &Olc6502::IZY)
+		else if (m_lookup[opcode].addrmode == &Cpu6502::IZY)
 		{
 			lo = m_bus->cpuRead(addr, true); addr++;
 			hi = 0x00;								
 			sInst += "($" + hex(lo, 2) + "), Y {IZY}";
 		}
-		else if (m_lookup[opcode].addrmode == &Olc6502::ABS)
+		else if (m_lookup[opcode].addrmode == &Cpu6502::ABS)
 		{
 			lo = m_bus->cpuRead(addr, true); addr++;
 			hi = m_bus->cpuRead(addr, true); addr++;
 			sInst += "$" + hex((uint16_t)(hi << 8) | lo, 4) + " {ABS}";
 		}
-		else if (m_lookup[opcode].addrmode == &Olc6502::ABX)
+		else if (m_lookup[opcode].addrmode == &Cpu6502::ABX)
 		{
 			lo = m_bus->cpuRead(addr, true); addr++;
 			hi = m_bus->cpuRead(addr, true); addr++;
 			sInst += "$" + hex((uint16_t)(hi << 8) | lo, 4) + ", X {ABX}";
 		}
-		else if (m_lookup[opcode].addrmode == &Olc6502::ABY)
+		else if (m_lookup[opcode].addrmode == &Cpu6502::ABY)
 		{
 			lo = m_bus->cpuRead(addr, true); addr++;
 			hi = m_bus->cpuRead(addr, true); addr++;
 			sInst += "$" + hex((uint16_t)(hi << 8) | lo, 4) + ", Y {ABY}";
 		}
-		else if (m_lookup[opcode].addrmode == &Olc6502::IND)
+		else if (m_lookup[opcode].addrmode == &Cpu6502::IND)
 		{
 			lo = m_bus->cpuRead(addr, true); addr++;
 			hi = m_bus->cpuRead(addr, true); addr++;
 			sInst += "($" + hex((uint16_t)(hi << 8) | lo, 4) + ") {IND}";
 		}
-		else if (m_lookup[opcode].addrmode == &Olc6502::REL)
+		else if (m_lookup[opcode].addrmode == &Cpu6502::REL)
 		{
 			value = m_bus->cpuRead(addr, true); addr++;
 			sInst += "$" + hex(value, 2) + " [$" + hex(addr + value, 4) + "] {REL}";

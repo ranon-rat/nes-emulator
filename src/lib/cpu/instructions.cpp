@@ -4,16 +4,16 @@
 #include "consts.h++"
 #include "utils.h++"
 // INSTRUCTIONS
-uint8_t Olc6502::fetch() // funciona
+uint8_t Cpu6502::fetch() // funciona
 {
-    if (!(m_lookup[opcode].addrmode == &Olc6502::IMP))
+    if (!(m_lookup[opcode].addrmode == &Cpu6502::IMP))
     {
         fetched = read(addr_abs);
     }
     return fetched;
 }
 // logical gates
-uint8_t Olc6502::AND() // and
+uint8_t Cpu6502::AND() // and
 {
     fetch();
     acc_r = acc_r & fetched;
@@ -21,21 +21,21 @@ uint8_t Olc6502::AND() // and
     return 1;
 }
 
-uint8_t Olc6502::ORA()
+uint8_t Cpu6502::ORA()
 {
     fetch();
     acc_r = acc_r | fetched;
     check_unused_or_negative(acc_r);
     return 1;
 }
-uint8_t Olc6502::EOR()
+uint8_t Cpu6502::EOR()
 {
     fetch();
     acc_r = acc_r ^ fetched;
     check_unused_or_negative(acc_r);
     return 1;
 }
-uint8_t Olc6502::NOP()
+uint8_t Cpu6502::NOP()
 {
     switch (opcode)
     {
@@ -51,21 +51,21 @@ uint8_t Olc6502::NOP()
     return 0;
 }
 
-uint8_t Olc6502::ASL()
+uint8_t Cpu6502::ASL()
 {
 
     fetch();
     uint16_t temp = (uint16_t)fetched << 1;
     SetFlag(C, (temp & PAGE_BYTE_PART) > 0);
     check_unused_or_negative(temp & OFFSET_BYTE_PART);
-    if (m_lookup[opcode].addrmode == &Olc6502::IMP)
+    if (m_lookup[opcode].addrmode == &Cpu6502::IMP)
         acc_r = temp & OFFSET_BYTE_PART;
     else
         write(addr_abs, temp & OFFSET_BYTE_PART);
     return 0;
 }
 
-uint8_t Olc6502::INC()
+uint8_t Cpu6502::INC()
 {
     fetch();
     uint16_t temp = fetched + 1;
@@ -75,14 +75,14 @@ uint8_t Olc6502::INC()
     return 0;
 }
 
-uint8_t Olc6502::INX()
+uint8_t Cpu6502::INX()
 {
     x_r++;
     check_unused_or_negative(x_r);
     return 0;
 }
 
-uint8_t Olc6502::INY()
+uint8_t Cpu6502::INY()
 {
     y_r++;
     check_unused_or_negative(x_r);
@@ -90,12 +90,12 @@ uint8_t Olc6502::INY()
     return 0;
 }
 
-uint8_t Olc6502::JMP()
+uint8_t Cpu6502::JMP()
 {
     pc_r = addr_abs;
     return 0;
 }
-void Olc6502::general_branching()
+void Cpu6502::general_branching()
 {
     cycles++;
     addr_abs = pc_r + addr_rel;
@@ -104,7 +104,7 @@ void Olc6502::general_branching()
     pc_r = addr_abs;
 }
 // branching instruction
-uint8_t Olc6502::BCS()
+uint8_t Cpu6502::BCS()
 {
     if (GetFlag(C) == 1)
         general_branching();
@@ -114,7 +114,7 @@ uint8_t Olc6502::BCS()
 
 // Instruction: Branch if Carry Clear
 // Function:    if(C == 0) pc = address
-uint8_t Olc6502::BCC()
+uint8_t Cpu6502::BCC()
 {
     if (GetFlag(C) == 0)
         general_branching();
@@ -122,7 +122,7 @@ uint8_t Olc6502::BCC()
 }
 
 // branching instruction
-uint8_t Olc6502::BEQ()
+uint8_t Cpu6502::BEQ()
 {
     if (GetFlag(Z) == 1) // branch if zero
         general_branching();
@@ -130,36 +130,38 @@ uint8_t Olc6502::BEQ()
 }
 
 // BMI
-uint8_t Olc6502::BMI()
+uint8_t Cpu6502::BMI()
 {
 
     if (GetFlag(N) == 1) // branch if negative
         general_branching();
     return 0;
 }
-uint8_t Olc6502::BPL()
+uint8_t Cpu6502::BPL()
 {
     if (GetFlag(N) == 0)
-        general_branching(); // branch if positive
+	{
+		general_branching();
+	}
     return 0;
 }
 
 // branch if not equal
-uint8_t Olc6502::BNE()
+uint8_t Cpu6502::BNE()
 {
     if (GetFlag(Z) == 0)
         general_branching();
     return 0;
 }
 // branch if overflow clear
-uint8_t Olc6502::BVC()
+uint8_t Cpu6502::BVC()
 {
     // branch if overflow
     if (GetFlag(V) == 0)
         general_branching();
     return 0;
 }
-uint8_t Olc6502::BVS()
+uint8_t Cpu6502::BVS()
 {
     if (GetFlag(V) == 1)
         general_branching();
@@ -168,25 +170,25 @@ uint8_t Olc6502::BVS()
 
 // CLEAR INSTRUCTIONS
 // clear the carry bit
-uint8_t Olc6502::CLC()
+uint8_t Cpu6502::CLC()
 {
     SetFlag(C, false);
     return 0;
 }
 // clear decimal mode
-uint8_t Olc6502::CLD()
+uint8_t Cpu6502::CLD()
 {
     SetFlag(D, false);
     return 0;
 }
 // clear interrupter
-uint8_t Olc6502::CLI()
+uint8_t Cpu6502::CLI()
 {
     SetFlag(I, false);
     return 0;
 }
 // clear unused
-uint8_t Olc6502::CLV()
+uint8_t Cpu6502::CLV()
 {
     SetFlag(V, false);
     return 0;
@@ -194,7 +196,7 @@ uint8_t Olc6502::CLV()
 
 // ADD
 
-uint8_t Olc6502::ADC()
+uint8_t Cpu6502::ADC()
 {
     fetch();
     uint16_t temp = (uint16_t)acc_r + (uint16_t)fetched + (uint16_t)GetFlag(C);
@@ -207,12 +209,12 @@ uint8_t Olc6502::ADC()
     //       Positive Number + Positive Number = Positive Result -> OK! No Overflow
     //       Negative Number + Negative Number = Negative Result -> OK! NO Overflow
 
-	SetFlag(V, (~((uint16_t)acc_r ^ (uint16_t)fetched) & ((uint16_t)acc_r ^ (uint16_t)temp)) & 0x0080);
+    SetFlag(V, (~((uint16_t)acc_r ^ (uint16_t)fetched) & ((uint16_t)acc_r ^ (uint16_t)temp)) & 0x0080);
     acc_r = temp & OFFSET_BYTE_PART;
     return 1;
 }
 // subtract
-uint8_t Olc6502::SBC()
+uint8_t Cpu6502::SBC()
 {
 
     fetch();
@@ -223,7 +225,7 @@ uint8_t Olc6502::SBC()
     uint16_t temp = (uint16_t)acc_r + (uint16_t)value + (uint16_t)GetFlag(C);
     SetFlag(C, temp > 255);
     check_unused_or_negative(temp & OFFSET_BYTE_PART);
-	SetFlag(V, (temp ^ (uint16_t)acc_r) & (temp ^ value) & 0x0080);
+    SetFlag(V, (temp ^ (uint16_t)acc_r) & (temp ^ value) & 0x0080);
 
     acc_r = temp & OFFSET_BYTE_PART;
 
@@ -231,14 +233,14 @@ uint8_t Olc6502::SBC()
     return 1;
 }
 
-uint8_t Olc6502::PHA()
+uint8_t Cpu6502::PHA()
 { // adds accumulator to the stack
     write(STACK_MEMORY_BASE + stkp_r, acc_r);
     stkp_r--;
     return 0;
 }
 
-uint8_t Olc6502::PLA()
+uint8_t Cpu6502::PLA()
 {
     stkp_r++;
     acc_r = read(STACK_MEMORY_BASE + stkp_r);
@@ -249,7 +251,7 @@ uint8_t Olc6502::PLA()
 }
 // push status into the stack
 
-uint8_t Olc6502::PHP()
+uint8_t Cpu6502::PHP()
 {
 
     write(STACK_MEMORY_BASE + stkp_r, status_r | B | U);
@@ -260,7 +262,7 @@ uint8_t Olc6502::PHP()
     return 0;
 }
 
-uint8_t Olc6502::PLP()
+uint8_t Cpu6502::PLP()
 {
     stkp_r++;
     status_r = read(STACK_MEMORY_BASE + stkp_r);
@@ -268,7 +270,7 @@ uint8_t Olc6502::PLP()
     return 0;
 }
 
-void Olc6502::reset()
+void Cpu6502::reset()
 {
     acc_r = 0;
     x_r = 0;
@@ -285,7 +287,7 @@ void Olc6502::reset()
     cycles = 8;
 }
 
-void Olc6502::general_interrupt_request(uint16_t value, uint8_t c)
+void Cpu6502::general_interrupt_request(uint16_t value, uint8_t c)
 {
 
     write(STACK_MEMORY_BASE + stkp_r, (pc_r >> 8) & OFFSET_BYTE_PART);
@@ -304,17 +306,17 @@ void Olc6502::general_interrupt_request(uint16_t value, uint8_t c)
     cycles = c;
 }
 
-void Olc6502::irq()
+void Cpu6502::irq()
 {
     if (GetFlag(I) == 0)
         general_interrupt_request(0xfffe, 7);
 }
-void Olc6502::nmi()
+void Cpu6502::nmi()
 {
     general_interrupt_request(0xfffa, 8);
 }
 
-uint8_t Olc6502::RTI()
+uint8_t Cpu6502::RTI()
 { // return from interrupt
     stkp_r++;
     status_r = read(STACK_MEMORY_BASE + stkp_r);
@@ -324,10 +326,10 @@ uint8_t Olc6502::RTI()
     // aqui tecnicamente esta sacando el high y el low
 
     // podria hacer lo siguiente creo?
-    uint16_t low=read(STACK_MEMORY_BASE+stkp_r);
-    stkp_r++;   
-    uint16_t high=read(STACK_MEMORY_BASE+stkp_r);
-    pc_r=Utils::combine2bytes(high,low);
+    uint16_t low = read(STACK_MEMORY_BASE + stkp_r);
+    stkp_r++;
+    uint16_t high = read(STACK_MEMORY_BASE + stkp_r);
+    pc_r = Utils::combine2bytes(high, low);
     /*
     pc_r = (uint16_t)read(STACK_MEMORY_BASE + stkp_r);
     stkp_r++;
@@ -335,24 +337,24 @@ uint8_t Olc6502::RTI()
     */
     return 0;
 }
-uint8_t Olc6502::RTS()
+uint8_t Cpu6502::RTS()
 {
 
     stkp_r++;
-    uint16_t low=(uint16_t)read(STACK_MEMORY_BASE + stkp_r);
+    uint16_t low = (uint16_t)read(STACK_MEMORY_BASE + stkp_r);
     stkp_r++;
-    uint16_t high=read(STACK_MEMORY_BASE + stkp_r);
-    pc_r |= Utils::combine2bytes(high,low);
+    uint16_t high = read(STACK_MEMORY_BASE + stkp_r);
+    pc_r |= Utils::combine2bytes(high, low);
     pc_r++;
     return 0;
 }
 
-uint8_t Olc6502::XXX()
+uint8_t Cpu6502::XXX()
 {
     return 0;
 }
 
-uint8_t Olc6502::BIT()
+uint8_t Cpu6502::BIT()
 {
     fetch();
     uint16_t temp = acc_r & fetched;
@@ -362,25 +364,28 @@ uint8_t Olc6502::BIT()
     return 0;
 }
 
-uint8_t Olc6502::BRK()
+uint8_t Cpu6502::BRK()
 {
+
+    
     pc_r++;
+    SetFlag(I,true);
     write(STACK_MEMORY_BASE + stkp_r, (pc_r >> 8) & OFFSET_BYTE_PART);
     stkp_r--;
     write(STACK_MEMORY_BASE + stkp_r, (pc_r)&OFFSET_BYTE_PART);
     stkp_r--;
 
-    SetFlag(B, 1);
+    SetFlag(B, true);
     write(STACK_MEMORY_BASE + stkp_r, status_r);
     stkp_r--;
-    SetFlag(B, 0);
+    SetFlag(B, false);
 
     pc_r = Utils::combine2bytes(read(0xFFFF), read(0xFFFE));
 
     return 0;
 }
 // Function:    C <- A >= M      Z <- (A - M) == 0
-uint8_t Olc6502::general_compare(uint8_t reg)
+uint8_t Cpu6502::general_compare(uint8_t reg)
 {
     fetch();
     uint16_t temp = (uint16_t)reg - (uint16_t)fetched;
@@ -390,24 +395,24 @@ uint8_t Olc6502::general_compare(uint8_t reg)
     return 1;
 }
 
-uint8_t Olc6502::CMP()
+uint8_t Cpu6502::CMP()
 {
 
     return general_compare(acc_r);
 }
 
-uint8_t Olc6502::CPX()
+uint8_t Cpu6502::CPX()
 {
 
     return general_compare(x_r);
 }
 
-uint8_t Olc6502::CPY()
+uint8_t Cpu6502::CPY()
 {
 
     return general_compare(y_r);
 }
-uint8_t Olc6502::DEC()
+uint8_t Cpu6502::DEC()
 {
 
     fetch();
@@ -418,19 +423,19 @@ uint8_t Olc6502::DEC()
     return 0;
 }
 
-uint8_t Olc6502::DEX()
+uint8_t Cpu6502::DEX()
 {
     x_r--;
     check_unused_or_negative(x_r);
     return 0;
 }
-uint8_t Olc6502::DEY()
+uint8_t Cpu6502::DEY()
 {
     y_r--;
     check_unused_or_negative(y_r);
     return 0;
 }
-uint8_t Olc6502::JSR()
+uint8_t Cpu6502::JSR()
 {
     pc_r--;
 
@@ -443,15 +448,16 @@ uint8_t Olc6502::JSR()
     return 0;
 }
 
-uint8_t Olc6502::LDA()
+uint8_t Cpu6502::LDA()
 {
     fetch();
     acc_r = fetched;
-    check_unused_or_negative(acc_r);
+    SetFlag(Z, acc_r == 0x00);
+    SetFlag(N, acc_r & 0x80);
     return 1;
 }
 
-uint8_t Olc6502::LDX()
+uint8_t Cpu6502::LDX()
 {
     fetch();
     x_r = fetched;
@@ -459,7 +465,7 @@ uint8_t Olc6502::LDX()
     return 1;
 }
 
-uint8_t Olc6502::LDY()
+uint8_t Cpu6502::LDY()
 {
     fetch();
     y_r = fetched;
@@ -467,7 +473,7 @@ uint8_t Olc6502::LDY()
     return 1;
 }
 
-uint8_t Olc6502::LSR()
+uint8_t Cpu6502::LSR()
 {
 
     // shift one bit RIGHT?
@@ -475,14 +481,14 @@ uint8_t Olc6502::LSR()
     SetFlag(C, fetched & 0x0001);
     uint16_t temp = fetched >> 1;
     check_unused_or_negative(temp);
-    if (m_lookup[opcode].addrmode == &Olc6502::IMP)
+    if (m_lookup[opcode].addrmode == &Cpu6502::IMP)
         acc_r = temp & OFFSET_BYTE_PART;
     else
         write(addr_abs, temp & OFFSET_BYTE_PART);
     return 0;
 }
 
-uint8_t Olc6502::ROR()
+uint8_t Cpu6502::ROR()
 { // rotators, these are rotators, i think that this one rotates to the right
 
     fetch();
@@ -491,7 +497,7 @@ uint8_t Olc6502::ROR()
     return 0;
 }
 
-uint8_t Olc6502::ROL() // this one to the left
+uint8_t Cpu6502::ROL() // this one to the left
 {
     fetch();
     uint16_t temp = (uint16_t)(fetched << 1) | GetFlag(C);
@@ -500,38 +506,38 @@ uint8_t Olc6502::ROL() // this one to the left
     return 0;
 }
 
-uint8_t Olc6502::STA()
+uint8_t Cpu6502::STA()
 {
     write(addr_abs, acc_r); // writes accumulator to the address
     return 0;
 }
-uint8_t Olc6502::STX()
+uint8_t Cpu6502::STX()
 {
     write(addr_abs, x_r); // writes x register to the address
     return 0;
 }
-uint8_t Olc6502::STY()
+uint8_t Cpu6502::STY()
 {
     write(addr_abs, y_r); // writes y register to the address
     return 0;
 }
 
-uint8_t Olc6502::SEC()
+uint8_t Cpu6502::SEC()
 { // sets carry flag to true
     SetFlag(C, true);
     return 0;
 }
-uint8_t Olc6502::SED()
+uint8_t Cpu6502::SED()
 {
     SetFlag(D, true); // sets decimal flag to true
     return 0;
 }
-uint8_t Olc6502::SEI()
+uint8_t Cpu6502::SEI()
 {
     SetFlag(I, true); // sets interrupter to true
     return 0;
 }
-uint8_t Olc6502::TAX()
+uint8_t Cpu6502::TAX()
 {
     // transfers accumulator to X
     x_r = acc_r;
@@ -539,7 +545,7 @@ uint8_t Olc6502::TAX()
     return 0;
 }
 
-uint8_t Olc6502::TAY()
+uint8_t Cpu6502::TAY()
 {
     // transfers accumulator to X
     y_r = acc_r;
@@ -547,14 +553,14 @@ uint8_t Olc6502::TAY()
     return 0;
 }
 
-uint8_t Olc6502::TSX()
+uint8_t Cpu6502::TSX()
 {
     // transfers stack pointer to x
     x_r = stkp_r;
     check_unused_or_negative(x_r);
     return 0;
 }
-uint8_t Olc6502::TXA()
+uint8_t Cpu6502::TXA()
 {
     // transfers x register to accumulator
     acc_r = x_r;
@@ -562,13 +568,13 @@ uint8_t Olc6502::TXA()
     return 0;
 }
 
-uint8_t Olc6502::TXS()
+uint8_t Cpu6502::TXS()
 {
     stkp_r = x_r;
     return 0;
 }
 
-uint8_t Olc6502::TYA()
+uint8_t Cpu6502::TYA()
 {
     acc_r = y_r;
     check_unused_or_negative(acc_r);

@@ -5,7 +5,7 @@
 
 // addressing mode: implied
 // this gets the data and then we use it in the ALU?
-uint8_t Olc6502::IMP()
+uint8_t Cpu6502::IMP()
 {
     fetched = acc_r; // this can be working for the accumulator
     return 0;
@@ -14,7 +14,7 @@ uint8_t Olc6502::IMP()
 // Addressing Mode immediate
 
 // the data is supplied as part of the instruction, its going to be the next byte
-uint8_t Olc6502::IMM()
+uint8_t Cpu6502::IMM()
 {
     // this will get the register and use it for our needs
 
@@ -24,7 +24,7 @@ uint8_t Olc6502::IMM()
     return 0;
 }
 // zero page address
-uint8_t Olc6502::ZP0()
+uint8_t Cpu6502::ZP0()
 {
 
     // 0x[ff][55]
@@ -48,7 +48,7 @@ uint8_t Olc6502::ZP0()
     return 0;
 }
 // addressing mode: zero page x
-uint8_t Olc6502::ZPX()
+uint8_t Cpu6502::ZPX()
 {
     addr_abs = (read(pc_r) + x_r); // it will read with an offset
     pc_r++;
@@ -56,14 +56,14 @@ uint8_t Olc6502::ZPX()
     return 0;
 }
 // addressing mode: zero page y
-uint8_t Olc6502::ZPY()
+uint8_t Cpu6502::ZPY()
 {
     addr_abs = (read(pc_r) + y_r); // it will read with an offset
     pc_r++;
     addr_abs &= 0x00ff;
     return 0;
 }
-uint8_t Olc6502::ABS()
+uint8_t Cpu6502::ABS()
 {
 
     // so this is the offset
@@ -94,7 +94,7 @@ uint8_t Olc6502::ABS()
 
 // Addressing mode:: Absolute with x offset
 // we make the same, but we pass an offset to addr_abs
-uint8_t Olc6502::ABX()
+uint8_t Cpu6502::ABX()
 {
     // offset
     uint16_t low_byte = read(pc_r);
@@ -121,7 +121,7 @@ uint8_t Olc6502::ABX()
 }
 // Addressing Mode: Absolute Y
 // its the same as ABX but with the register Y
-uint8_t Olc6502::ABY()
+uint8_t Cpu6502::ABY()
 {
     uint16_t low_byte = read(pc_r);
     pc_r++;
@@ -140,7 +140,7 @@ uint8_t Olc6502::ABY()
     return 0;
 }
 // indirect, it uses pointer :)
-uint8_t Olc6502::IND()
+uint8_t Cpu6502::IND()
 {
 
     uint16_t ptr_low = read(pc_r);
@@ -162,7 +162,7 @@ uint8_t Olc6502::IND()
     return 0;
 }
 // indirect addressing
-uint8_t Olc6502::IZX()
+uint8_t Cpu6502::IZX()
 { // somewhere in the zero page
     uint16_t t = read(pc_r);
     pc_r++;
@@ -175,7 +175,7 @@ uint8_t Olc6502::IZX()
     return 0;
 }
 // why both of this behave differently?
-uint8_t Olc6502::IZY()
+uint8_t Cpu6502::IZY()
 {
 
     uint16_t t = read(pc_r);
@@ -194,7 +194,7 @@ uint8_t Olc6502::IZY()
     return 0;
 }
 
-uint8_t Olc6502::REL()
+uint8_t Cpu6502::REL()
 {
     addr_rel = read(pc_r);
     pc_r++;

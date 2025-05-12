@@ -1,11 +1,11 @@
 #include "ppu.h++"
 
-void Olc2c02::connectCartidge(const std::shared_ptr<Cartridge> &cartridge)
+void Pppu2c02::connectCartidge(const std::shared_ptr<Cartridge> &cartridge)
 {
     cart = cartridge;
 }
 
-void Olc2c02::clock()
+void Pppu2c02::clock()
 {
     screenDrawPixel(cycle - 1, scanline, palScreen[(rand() % 2) ? 0x3f : 0x30]);
 

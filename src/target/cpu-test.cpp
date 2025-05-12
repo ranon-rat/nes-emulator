@@ -6,13 +6,13 @@
 #include "bus.h++"
 #include "utils.h++"
 #define FONT_SIZE 8
-class Demo_olc6502
+class Demo_Cpu6502
 {
 public:
-  Demo_olc6502()
+  Demo_Cpu6502()
   {
     unscii = LoadFontEx("font/unscii-8.ttf", 8, nullptr, 0);
-    SetWindowTitle("olc6502 Demonstration");
+    SetWindowTitle("Cpu6502 Demonstration");
   }
   std::shared_ptr<Cartridge> cart;
   Bus nes;
@@ -20,6 +20,7 @@ public:
   Font unscii;
   bool bEmulationRun = false;
   float residualTime = 0.0f;
+  uint8_t nSelectedPalette = 0x00;
 
   std::string hex(uint32_t n, uint8_t d)
   {
@@ -57,15 +58,15 @@ public:
   {
     std::string status = "STATUS: ";
     this->DrawTextI("STATUS:", x, y, FONT_SIZE, BLACK);
-    this->DrawTextI("N", x + 64, y, FONT_SIZE, nes.cpu.status_r & Olc6502::N ? GREEN : RED);
-    this->DrawTextI("N", x + 64, y, FONT_SIZE, nes.cpu.status_r & Olc6502::N ? GREEN : RED);
-    this->DrawTextI("V", x + 80, y, FONT_SIZE, nes.cpu.status_r & Olc6502::V ? GREEN : RED);
-    this->DrawTextI("-", x + 96, y, FONT_SIZE, nes.cpu.status_r & Olc6502::U ? GREEN : RED);
-    this->DrawTextI("B", x + 112, y, FONT_SIZE, nes.cpu.status_r & Olc6502::B ? GREEN : RED);
-    this->DrawTextI("D", x + 128, y, FONT_SIZE, nes.cpu.status_r & Olc6502::D ? GREEN : RED);
-    this->DrawTextI("I", x + 144, y, FONT_SIZE, nes.cpu.status_r & Olc6502::I ? GREEN : RED);
-    this->DrawTextI("Z", x + 160, y, FONT_SIZE, nes.cpu.status_r & Olc6502::Z ? GREEN : RED);
-    this->DrawTextI("C", x + 178, y, FONT_SIZE, nes.cpu.status_r & Olc6502::C ? GREEN : RED);
+    this->DrawTextI("N", x + 64, y, FONT_SIZE, nes.cpu.status_r & Cpu6502::N ? GREEN : RED);
+    this->DrawTextI("N", x + 64, y, FONT_SIZE, nes.cpu.status_r & Cpu6502::N ? GREEN : RED);
+    this->DrawTextI("V", x + 80, y, FONT_SIZE, nes.cpu.status_r & Cpu6502::V ? GREEN : RED);
+    this->DrawTextI("-", x + 96, y, FONT_SIZE, nes.cpu.status_r & Cpu6502::U ? GREEN : RED);
+    this->DrawTextI("B", x + 112, y, FONT_SIZE, nes.cpu.status_r & Cpu6502::B ? GREEN : RED);
+    this->DrawTextI("D", x + 128, y, FONT_SIZE, nes.cpu.status_r & Cpu6502::D ? GREEN : RED);
+    this->DrawTextI("I", x + 144, y, FONT_SIZE, nes.cpu.status_r & Cpu6502::I ? GREEN : RED);
+    this->DrawTextI("Z", x + 160, y, FONT_SIZE, nes.cpu.status_r & Cpu6502::Z ? GREEN : RED);
+    this->DrawTextI("C", x + 178, y, FONT_SIZE, nes.cpu.status_r & Cpu6502::C ? GREEN : RED);
 
     DrawString("PC: $" + hex(nes.cpu.pc_r, 4), x, y + FONT_SIZE, FONT_SIZE, BLACK);
     DrawString("A: $" + hex(nes.cpu.acc_r, 2) + "  [" + std::to_string(nes.cpu.acc_r) + "]", x, y + 20, FONT_SIZE, BLACK);
@@ -120,7 +121,7 @@ public:
   {
     BeginDrawing();
 
-    ClearBackground(RAYWHITE);
+    ClearBackground({.r=240,.g=240,.b=240,.a=255,});
     if (bEmulationRun)
     {
       if (residualTime > 0.0f)
@@ -168,25 +169,52 @@ public:
     if (IsKeyPressed(KEY_SPACE))
       bEmulationRun = !bEmulationRun;
 
+    if (IsKeyPressed(KEY_P))
+    {
+      (++nSelectedPalette) &= 0x07;
+    }
+
     DrawCpu(516, 2);
     DrawCode(516, 72, 26);
-    Image screen_buffer = nes.ppu.GetScreen();
-    Texture2D screen = LoadTextureFromImage(screen_buffer);
 
-    defer([&]()
-          { UnloadTexture(screen); });
-    DrawTextureEx(screen, {0, 0}, 0.0f, 2.0f, WHITE);
+    Texture2D a1 = DrawSprite(0, 0, nes.ppu.GetScreen(),2);
+    Texture2D a2 = DrawSprite(516, 348, nes.ppu.GetPatternTable(0, nSelectedPalette),1);
+    Texture2D a3 = DrawSprite(516+128+10, 348, nes.ppu.GetPatternTable(1, nSelectedPalette),1);
+    defer([&]
+          {
+            UnloadTexture(a1);
+            UnloadTexture(a2);
+
+            UnloadTexture(a3); });
+
+    const int nSwatchSize = 6;
+    for (int p = 0; p < 8; p++)
+    {
+      for (int s = 0; s < 4; s++)
+      {
+        DrawRectangle(516 + p * (nSwatchSize * 5) + s * nSwatchSize, 340, nSwatchSize, nSwatchSize, nes.ppu.GetColorFromPaletteRam(p, s));
+      }
+    }
+    DrawRectangle(516+nSelectedPalette*(nSwatchSize*5)-1,339,nSwatchSize*4,nSwatchSize,WHITE);
     EndDrawing();
+  }
+
+  Texture2D DrawSprite(float x, float y, Image image,float scale)
+  {
+    Texture2D sprite = LoadTextureFromImage(image);
+
+    DrawTextureEx(sprite, {.x = x, .y = y}, 0.0f, scale, WHITE);
+    return sprite;
   }
 };
 
 int main()
 {
-  const int screenWidth = 780;
-  const int screenHeight = 480;
+  const int screenWidth = 800;
+  const int screenHeight = 580;
 
-  InitWindow(screenWidth, screenHeight, "olc6502 Demonstration");
-  Demo_olc6502 demo;
+  InitWindow(screenWidth, screenHeight, "Cpu6502 Demonstration");
+  Demo_Cpu6502 demo;
   SetTargetFPS(60);
   SetTraceLogLevel(LOG_NONE);
 

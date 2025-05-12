@@ -1,5 +1,5 @@
 #include "ppu.h++"
-Olc2c02::Olc2c02()
+Pppu2c02::Pppu2c02()
 {
     palScreen[0x00] = Color{84, 84, 84,255};
 	palScreen[0x01] = Color{0, 30, 116,255};

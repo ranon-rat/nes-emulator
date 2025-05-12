@@ -6,11 +6,11 @@
 #include <map>
 
 class Bus;
-class Olc6502
+class Cpu6502
 {
 public:
-    Olc6502();
-    ~Olc6502();
+    Cpu6502();
+    ~Cpu6502();
 
 public:
     enum FLAG6502
@@ -150,8 +150,8 @@ private:
     struct INSTRUCTION
     {
         std::string name;
-        uint8_t (Olc6502::*operate)(void) = nullptr;
-        uint8_t (Olc6502::*addrmode)(void) = nullptr;
+        uint8_t (Cpu6502::*operate)(void) = nullptr;
+        uint8_t (Cpu6502::*addrmode)(void) = nullptr;
         uint8_t cycles = 0;
     };
     std::vector<INSTRUCTION> m_lookup;

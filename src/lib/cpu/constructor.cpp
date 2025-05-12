@@ -1,8 +1,8 @@
 #include "cpu.h++"
 
-Olc6502::Olc6502()
+Cpu6502::Cpu6502()
 {
-    using a = Olc6502;
+    using a = Cpu6502;
     m_lookup =
         {
             {"BRK", &a::BRK, &a::IMM, 7},
@@ -270,4 +270,4 @@ Olc6502::Olc6502()
 // i am defining the functions, plus moonmake allows me to have this kind of structure :)
 
 
-Olc6502::~Olc6502(){}
+Cpu6502::~Cpu6502(){}
