@@ -4,9 +4,10 @@
 
 void Bus::ppuWrite(uint16_t addr, uint8_t data)
 {
+    ppu.ppuWrite(addr, data);
     
 }
 uint8_t Bus::ppuRead(uint16_t addr, bool bReadOnly)
 {
-    return 0;
+    return ppu.ppuRead(addr, bReadOnly);
 }
