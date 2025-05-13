@@ -3,11 +3,11 @@
 #include "bus.h++"
 #include "utils.h++"
 #include "consts.h++"
-#pragma GCC diagnostic ignored "-Wreturn-type"
+#include <iostream>
 
 uint8_t Cpu6502::read(uint16_t address)
 {
-    return m_bus->cpuRead(address);
+    return m_bus->cpuRead(address,false);
 }
 
 void Cpu6502::write(uint16_t address, uint8_t data)
@@ -22,10 +22,17 @@ void Cpu6502::clock()
     {
         opcode = read(pc_r);
         pc_r++;
+
         cycles = m_lookup[opcode].cycles;
+        /*
+        if(m_lookup[opcode].name=="LDA"){
+            std::cout<<"LDA "<<(int)opcode<<"\n";
+
+        }*/
         uint8_t additional_cycle1 = (this->*m_lookup[opcode].addrmode)();
         uint8_t additional_cycle2 = (this->*m_lookup[opcode].operate)();
         cycles += (additional_cycle1 & additional_cycle2);
+
     }
     cycles--;
 }

@@ -67,28 +67,13 @@ uint8_t Cpu6502::ABS()
 {
 
     // so this is the offset
-    uint16_t low_byte = read(pc_r); //
+    uint16_t lo = read(pc_r);
     pc_r++;
-    // this is the page
-    uint16_t high_byte = read(pc_r); // oh now i see,
+    uint16_t hi = read(pc_r);
     pc_r++;
-    // high byte le estoy pasando un uint8
-    // asi que la salida seria como de
-    // 0b00011111
-    // but we are trying to combine those values
-    // so i have to move those values 8 bits to the left
-    // and then combine it with the low byte
-    // so, if the low byte is 0x00ff
 
-    // and the high byte is
-    // 0x00ee
-    // then after combining it here
-    // we would have 0xEEFF, sheesh, thats nice
-    addr_abs |= Utils::combine2bytes(high_byte, low_byte);
+    addr_abs = (hi << 8) | lo;
 
-    // i think that we write to the absolute address
-    // after combining the high byte and the low byte
-    // why do i need to move the high_byte 8 points? uhh
     return 0;
 }
 
@@ -103,7 +88,7 @@ uint8_t Cpu6502::ABX()
     // this is the page
     uint16_t high_byte = read(pc_r);
     pc_r++;
-    addr_abs |= Utils::combine2bytes(high_byte, low_byte);
+    addr_abs |= COMBINE2BYTES(high_byte, low_byte);
 
     addr_abs += x_r;
 
@@ -148,16 +133,16 @@ uint8_t Cpu6502::IND()
     uint16_t ptr_high = read(pc_r);
     pc_r++;
     // so we combine the high and low parts :)
-    uint16_t ptr = Utils::combine2bytes(ptr_high, ptr_low);
+    uint16_t ptr = COMBINE2BYTES(ptr_high, ptr_low);
 
     // then we need to read the pointer
     if (ptr_low == 0x00FF) // Simulate page boundary hardware bug
     {
-        addr_abs = Utils::combine2bytes(read(ptr & PAGE_BYTE_PART), read(ptr + 0));
+        addr_abs = COMBINE2BYTES((uint16_t)read(ptr & PAGE_BYTE_PART), read(ptr + 0));
     }
     else // Behave normally
     {
-        addr_abs = Utils::combine2bytes(read(ptr + 1), read(ptr + 0));
+        addr_abs = COMBINE2BYTES((uint16_t)read(ptr + 1) , read(ptr + 0));
     }
     return 0;
 }
@@ -171,7 +156,7 @@ uint8_t Cpu6502::IZX()
     uint16_t low_byte = read((t + (uint16_t)x_r) & OFFSET_BYTE_PART);
     uint16_t high_byte = read((t + (uint16_t)x_r + 1) & OFFSET_BYTE_PART);
 
-    addr_abs = Utils::combine2bytes(high_byte, low_byte);
+    addr_abs = COMBINE2BYTES(high_byte, low_byte);
     return 0;
 }
 // why both of this behave differently?
@@ -185,7 +170,7 @@ uint8_t Cpu6502::IZY()
     uint16_t low_byte = read((t)&OFFSET_BYTE_PART);
     uint16_t high_byte = read((t + 1) & OFFSET_BYTE_PART);
 
-    addr_abs = Utils::combine2bytes(high_byte, low_byte);
+    addr_abs = COMBINE2BYTES(high_byte, low_byte);
     addr_abs += y_r;
     if ((addr_abs << 8) != high_byte)
     {

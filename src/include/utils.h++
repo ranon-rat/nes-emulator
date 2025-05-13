@@ -32,5 +32,7 @@ private:
 // this simple macro is quite simple, all it does is to create a variable :)
 #define defer(action) DeferClass __DEFER__VAR##__COUNTER__(action)
 
+#define COMBINE2BYTES(high,low) ((high)<<8)|(low)
+
 
 #endif

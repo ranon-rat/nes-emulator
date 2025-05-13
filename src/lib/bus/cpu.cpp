@@ -18,6 +18,7 @@ void Bus::cpuWrite(uint16_t addr, uint8_t data)
 
 uint8_t Bus::cpuRead(uint16_t addr, bool readOnly)
 {
+
     uint8_t data = 0x00;
 
     if (cart->cpuRead(addr, data))
@@ -35,5 +36,7 @@ uint8_t Bus::cpuRead(uint16_t addr, bool readOnly)
         }
     }
 
+
+   
     return data;
 }

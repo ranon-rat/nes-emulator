@@ -3,6 +3,7 @@
 
 #include "consts.h++"
 #include "utils.h++"
+
 // INSTRUCTIONS
 uint8_t Cpu6502::fetch() // funciona
 {
@@ -280,7 +281,7 @@ void Cpu6502::reset()
     addr_abs = 0xFFFC;
     uint16_t low = read(addr_abs);
     uint16_t high = read(addr_abs + 1);
-    pc_r = Utils::combine2bytes(high, low);
+    pc_r = COMBINE2BYTES(high, low);
     addr_rel = 0x00;
     addr_abs = 0x00;
     fetched = 0x00;
@@ -302,7 +303,7 @@ void Cpu6502::general_interrupt_request(uint16_t value, uint8_t c)
     addr_abs = value;
     uint16_t low = read(addr_abs);
     uint16_t high = read(addr_abs + 1);
-    pc_r = Utils::combine2bytes(high, low);
+    pc_r = COMBINE2BYTES(high, low);
     cycles = c;
 }
 
@@ -329,7 +330,7 @@ uint8_t Cpu6502::RTI()
     uint16_t low = read(STACK_MEMORY_BASE + stkp_r);
     stkp_r++;
     uint16_t high = read(STACK_MEMORY_BASE + stkp_r);
-    pc_r = Utils::combine2bytes(high, low);
+    pc_r = COMBINE2BYTES(high, low);
     /*
     pc_r = (uint16_t)read(STACK_MEMORY_BASE + stkp_r);
     stkp_r++;
@@ -344,7 +345,7 @@ uint8_t Cpu6502::RTS()
     uint16_t low = (uint16_t)read(STACK_MEMORY_BASE + stkp_r);
     stkp_r++;
     uint16_t high = read(STACK_MEMORY_BASE + stkp_r);
-    pc_r |= Utils::combine2bytes(high, low);
+    pc_r = COMBINE2BYTES(high, low);
     pc_r++;
     return 0;
 }
@@ -380,7 +381,7 @@ uint8_t Cpu6502::BRK()
     stkp_r--;
     SetFlag(B, false);
 
-    pc_r = Utils::combine2bytes(read(0xFFFF), read(0xFFFE));
+    pc_r = COMBINE2BYTES((uint16_t)read(0xFFFF), (uint16_t)read(0xFFFE));
 
     return 0;
 }
@@ -451,6 +452,7 @@ uint8_t Cpu6502::JSR()
 uint8_t Cpu6502::LDA()
 {
     fetch();
+
     acc_r = fetched;
     SetFlag(Z, acc_r == 0x00);
     SetFlag(N, acc_r & 0x80);

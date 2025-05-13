@@ -34,7 +34,7 @@ def execute():
     EXTENSION=mmake.get_extension()
     STATIC_A_FILES=mmake.discover(join(".",moonmake_dir,"dependencies","lib"),".a")
     STATIC_LIBRARY=" ".join([f"-l{mmake.strip_lib_prefix(a).replace(".a","")}" for a in STATIC_A_FILES]+["-lgdi32 ","-lwinmm"])
-    IGNORE_FLAGS=" ".join(["-Wno-unused-parameter","-Wtype-limits"])
+    IGNORE_FLAGS=" ".join(["-Wno-unused-parameter","-Wno-type-limits"])
     NAME="msrc"
     main=mmake.Builder() 
     
@@ -55,7 +55,7 @@ def execute():
     #we create a library for later linking it with our target binaries
     main.watch([lib_static],lib_obj,"ar rcs $@ $^")
     #we generate the object files of thebinaries
-    main.watch(lib_obj,list(map(lambda r:join(".","src","lib",r),lib_files)),f"g++ {IGNORE_FLAGS} -c $< -o $@ {FLAGS} {INCLUDE} ",extra_dependencies=[*static_watch_file,*HEADERS])
+    main.watch(lib_obj,list(map(lambda r:join(".","src","lib",r),lib_files)),f"g++ {FLAGS} {IGNORE_FLAGS} -c $< -o $@  {INCLUDE} ",extra_dependencies=[*HEADERS])
 
     main.compile_all()
 if __name__=="__main__":
