@@ -33,7 +33,7 @@ private:
         uint8_t tv_system2;
         char unused[5];
     };
-    
+   public: 
 	enum MIRROR
 	{
 		HORIZONTAL,

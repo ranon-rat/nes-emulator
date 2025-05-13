@@ -87,10 +87,10 @@ void Pppu2c02::patternDrawPixel(int i,int x,int y,Color c){
         return;
     const size_t index=(y*PATTERN_SIZE+x)*4;
 
-    srpPatternTable[i][index + 0] = c.r*(rand() % 2);
-    srpPatternTable[i][index + 1] = c.g*(rand() % 2);
-    srpPatternTable[i][index + 2] = c.b*(rand() % 2);
-    srpPatternTable[i][index + 3] = c.a*(rand() % 2);
+    srpPatternTable[i][index + 0] = c.r;//*(rand() % 10<2?0:1);
+    srpPatternTable[i][index + 1] = c.g;//*(rand() % 10<2?0:1);
+    srpPatternTable[i][index + 2] = c.b;//*(rand() % 10<2?0:1);
+    srpPatternTable[i][index + 3] = c.a;//*(rand() % 10<2?0:1);
 }
 
 
