@@ -1,7 +1,5 @@
 #include "bus.h++"
-
-#include <bitset>
-#include <iostream>
+#include "consts.h++"
 void Bus::cpuWrite(uint16_t addr, uint8_t data)
 {
     // aqui definimos el rango en el cual la ram es utilizable
@@ -31,9 +29,7 @@ uint8_t Bus::cpuRead(uint16_t addr, bool readOnly)
     else if (addr >= BEGIN_ACCESS_PPU && addr <= END_ACCESS_PPU)
     {
         data = ppu.cpuRead(addr & 0x0007, readOnly); // this will write in 8 different states of the memory :)
-        if((addr&0x007)== 0x0002){
-            std::cout<<std::bitset<8>(data)<<"\n";
-        }
+      
     }
 
 

@@ -1,5 +1,6 @@
 #include "ppu.h++"
-
+#include <iostream>
+#include <bitset>
 Image Pppu2c02::GetScreen()
 {
     return {
@@ -35,10 +36,17 @@ Image Pppu2c02::GetPatternTable(uint8_t i,uint8_t palette)
 
                 for (uint16_t col = 0; col < 8; col++)
                 {
+
                     uint8_t pixel=(tile_lsb&0x01)+(tile_msb&0x01);
                     tile_lsb>>=1;
                     tile_msb>>=1;
+                    if(scanline>261){
 
+
+//                        std::cout<<std::bitset<8>(tile_lsb)<<" "<<std::bitset<8>(tile_msb)<<"\n";
+//                        std::cout<<std::bitset<8>(pixel)<<"\n";
+//                        std::cout<<ColorToInt(GetColorFromPaletteRam(palette,pixel))<<"\n";
+                    }
                     patternDrawPixel(
                         i,
                         nTileX*8+(7-col),
@@ -48,6 +56,7 @@ Image Pppu2c02::GetPatternTable(uint8_t i,uint8_t palette)
                 }
             }
         }
+        
     }
 
     return {
@@ -78,15 +87,16 @@ void Pppu2c02::patternDrawPixel(int i,int x,int y,Color c){
         return;
     const size_t index=(y*PATTERN_SIZE+x)*4;
 
-    srpPatternTable[i][index + 0] = c.r;
-    srpPatternTable[i][index + 1] = c.g;
-    srpPatternTable[i][index + 2] = c.b;
-    srpPatternTable[i][index + 3] = c.a;
+    srpPatternTable[i][index + 0] = c.r*(rand() % 2);
+    srpPatternTable[i][index + 1] = c.g*(rand() % 2);
+    srpPatternTable[i][index + 2] = c.b*(rand() % 2);
+    srpPatternTable[i][index + 3] = c.a*(rand() % 2);
 }
 
 
 Color Pppu2c02::GetColorFromPaletteRam(uint8_t palette, uint8_t pixel){
-    const size_t index=ppuRead(0x3f00+(palette<<2)+pixel);
+    const size_t index=ppuRead(0x3F00 + (palette << 2) + pixel) & 0x3F;
+
 
     return  palScreen[index];
 }
