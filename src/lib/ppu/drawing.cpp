@@ -21,42 +21,40 @@ Image Pppu2c02::GetNameTable(uint8_t i)
         .format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8};
 }
 
-Image Pppu2c02::GetPatternTable(uint8_t i,uint8_t palette)
+Image Pppu2c02::GetPatternTable(uint8_t i, uint8_t palette)
 {
     for (uint16_t nTileY = 0; nTileY < 16; nTileY++)
     {
         for (uint16_t nTileX = 0; nTileX < 16; nTileX++)
         {
-            uint16_t nOffset  = nTileY * 256 + nTileX * 16; // 16 colors?
+            uint16_t nOffset = nTileY * 256 + nTileX * 16; // 16 colors?
             // 16 bytes of information
             for (uint16_t row = 0; row < 8; row++)
             {
-                uint8_t tile_lsb = ppuRead(i * 0x1000 + nOffset + row+0);
-                uint8_t tile_msb = ppuRead(i * 0x1000 + nOffset + row+8);
+                uint8_t tile_lsb = ppuRead(i * 0x1000 + nOffset + row + 0);
+                uint8_t tile_msb = ppuRead(i * 0x1000 + nOffset + row + 8);
 
                 for (uint16_t col = 0; col < 8; col++)
                 {
 
-                    uint8_t pixel=(tile_lsb&0x01)+(tile_msb&0x01);
-                    tile_lsb>>=1;
-                    tile_msb>>=1;
-                    if(scanline>261){
+                    uint8_t pixel = (tile_lsb & 0x01) + (tile_msb & 0x01);
+                    tile_lsb >>= 1;
+                    tile_msb >>= 1;
+                    if (scanline > 261)
+                    {
 
-
-//                        std::cout<<std::bitset<8>(tile_lsb)<<" "<<std::bitset<8>(tile_msb)<<"\n";
-//                        std::cout<<std::bitset<8>(pixel)<<"\n";
-//                        std::cout<<ColorToInt(GetColorFromPaletteRam(palette,pixel))<<"\n";
+                        //                        std::cout<<std::bitset<8>(tile_lsb)<<" "<<std::bitset<8>(tile_msb)<<"\n";
+                        //                        std::cout<<std::bitset<8>(pixel)<<"\n";
+                        //                        std::cout<<ColorToInt(GetColorFromPaletteRam(palette,pixel))<<"\n";
                     }
                     patternDrawPixel(
                         i,
-                        nTileX*8+(7-col),
-                        nTileY*8+row,
-                        GetColorFromPaletteRam(palette,pixel));
-
+                        nTileX * 8 + (7 - col),
+                        nTileY * 8 + row,
+                        GetColorFromPaletteRam(palette, pixel));
                 }
             }
         }
-        
     }
 
     return {
@@ -78,25 +76,35 @@ void Pppu2c02::screenDrawPixel(int x, int y, Color c)
     sprScreen[index + 3] = c.a;
 }
 
-void Pppu2c02::patternDrawPixel(int i,int x,int y,uint8_t c){
-    patternDrawPixel(i,x,y,GetColor(c));
+void Pppu2c02::patternDrawPixel(int i, int x, int y, uint8_t c)
+{
+    patternDrawPixel(i, x, y, GetColor(c));
 }
 
-void Pppu2c02::patternDrawPixel(int i,int x,int y,Color c){
+void Pppu2c02::patternDrawPixel(int i, int x, int y, Color c)
+{
     if (x < 0 || x >= PATTERN_SIZE || y < 0 || y >= PATTERN_SIZE)
+    {
+        std::cout << "x: " << x << " y: " << y << "\n";
         return;
-    const size_t index=(y*PATTERN_SIZE+x)*4;
+    }
+    const size_t index = (y * PATTERN_SIZE + x) * 4;
 
-    srpPatternTable[i][index + 0] = c.r;//*(rand() % 10<2?0:1);
-    srpPatternTable[i][index + 1] = c.g;//*(rand() % 10<2?0:1);
-    srpPatternTable[i][index + 2] = c.b;//*(rand() % 10<2?0:1);
-    srpPatternTable[i][index + 3] = c.a;//*(rand() % 10<2?0:1);
+    srpPatternTable[i][index + 0] = c.r; //*(rand() % 10<2?0:1);
+    srpPatternTable[i][index + 1] = c.g; //*(rand() % 10<2?0:1);
+    srpPatternTable[i][index + 2] = c.b; //*(rand() % 10<2?0:1);
+    srpPatternTable[i][index + 3] = c.a; //*(rand() % 10<2?0:1);
 }
 
-
-Color Pppu2c02::GetColorFromPaletteRam(uint8_t palette, uint8_t pixel){
-    const size_t index=ppuRead(0x3F00 + (palette << 2) + pixel) & 0x3F;
-
-
-    return  palScreen[index];
+Color Pppu2c02::GetColorFromPaletteRam(uint8_t palette, uint8_t pixel)
+{
+    const uint16_t address = 0x3F00 + (palette << 2) + pixel;
+    const size_t index = ppuRead(address) & 0x3F;
+    if (pixel == 0b10 && index>=0)
+    {   
+    
+       // std::cout << std::bitset<16>(address) << " " << std::bitset<8>(ppuRead(0x3F00 + (palette << 2) + pixel)) << " " << std::bitset<8>(pixel) << " " << std::bitset<8>(palette) << " " << std::bitset<8>(index) << "\n";
+    }
+    //
+    return palScreen[index];
 }

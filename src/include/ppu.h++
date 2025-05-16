@@ -19,9 +19,9 @@ public:
 
 public:
     std::shared_ptr<Cartridge> cart;
-    uint8_t tblName[2][KILOBYTE_SIZE];
-    uint8_t tblPalette[8];
-    uint8_t tblPattern[2][KILOBYTE_SIZE * 4];
+   uint8_t     tblName[2][1024];
+	uint8_t     tblPattern[2][4096];
+	uint8_t		tblPalette[32];
 
 public:
     void cpuWrite(uint16_t addr, uint8_t data);

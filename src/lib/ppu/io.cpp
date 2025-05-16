@@ -49,9 +49,10 @@ uint8_t Pppu2c02::cpuRead(uint16_t addr, bool bReadOnly)
     case PPU_addresses::MASK: //  mask
         break;
     case PPU_addresses::STATUS: // status
-     status.vertical_blank = 1;
-    
-        data = (status.reg & 0xe0) | (ppu_data_buffer & 0x1f);
+        status.vertical_blank = 1;
+        data = (status.reg & 0xE0) | (ppu_data_buffer & 0x1F);
+        status.vertical_blank = 0;
+
         address_latch = 0;
         break;
     case PPU_addresses::OAM_ADDRESS: // oam address
@@ -78,10 +79,11 @@ void Pppu2c02::ppuWrite(uint16_t addr, uint8_t data)
     if (cart->ppuWrite(addr, data))
     {
     }
+
     // pattern memory
     else if (addr >= 0x0000 && addr < 0x1fff)
     {
-		tblPattern[(addr & 0x1000) >> 12][addr & 0x0FFF] = data;
+        tblPattern[(addr & 0x1000) >> 12][addr & 0x0FFF] = data;
 
     } // name table memory?
     else if (addr >= 0x2000 && addr < 0x3eff)
@@ -113,8 +115,9 @@ void Pppu2c02::ppuWrite(uint16_t addr, uint8_t data)
 		}
 
     } // palette memory
-    else if (addr >= 0x3f00 && addr > 0x3fff)
+    else if (addr >= 0x3f00 && addr <= 0x3fff)
     {
+        std::cout << "palette write" << std::endl;
        addr &= 0x001F;
 		if (addr == 0x0010) addr = 0x0000;
 		if (addr == 0x0014) addr = 0x0004;
@@ -127,6 +130,7 @@ uint8_t Pppu2c02::ppuRead(uint16_t addr, bool bReadOnly)
 {
     uint8_t data = 0x00;
     addr &= END_ACCESS_PPU;
+    // pattern memory
     if (cart->ppuRead(addr, data))
     {
     }
@@ -140,40 +144,45 @@ uint8_t Pppu2c02::ppuRead(uint16_t addr, bool bReadOnly)
     {
         addr &= 0x0FFF;
 
-		if (cart->mirror == Cartridge::MIRROR::VERTICAL)
-		{
-			// Vertical
-			if (addr >= 0x0000 && addr <= 0x03FF)
-				data = tblName[0][addr & 0x03FF];
-			if (addr >= 0x0400 && addr <= 0x07FF)
-				data = tblName[1][addr & 0x03FF];
-			if (addr >= 0x0800 && addr <= 0x0BFF)
-				data = tblName[0][addr & 0x03FF];
-			if (addr >= 0x0C00 && addr <= 0x0FFF)
-				data = tblName[1][addr & 0x03FF];
-		}
-		else if (cart->mirror == Cartridge::MIRROR::HORIZONTAL)
-		{
-			// Horizontal
-			if (addr >= 0x0000 && addr <= 0x03FF)
-				data = tblName[0][addr & 0x03FF];
-			if (addr >= 0x0400 && addr <= 0x07FF)
-				data = tblName[0][addr & 0x03FF];
-			if (addr >= 0x0800 && addr <= 0x0BFF)
-				data = tblName[1][addr & 0x03FF];
-			if (addr >= 0x0C00 && addr <= 0x0FFF)
-				data = tblName[1][addr & 0x03FF];
-		}
+        if (cart->mirror == Cartridge::MIRROR::VERTICAL)
+        {
+            // Vertical
+            if (addr >= 0x0000 && addr <= 0x03FF)
+                data = tblName[0][addr & 0x03FF];
+            if (addr >= 0x0400 && addr <= 0x07FF)
+                data = tblName[1][addr & 0x03FF];
+            if (addr >= 0x0800 && addr <= 0x0BFF)
+                data = tblName[0][addr & 0x03FF];
+            if (addr >= 0x0C00 && addr <= 0x0FFF)
+                data = tblName[1][addr & 0x03FF];
+        }
+        else if (cart->mirror == Cartridge::MIRROR::HORIZONTAL)
+        {
+            // Horizontal
+            if (addr >= 0x0000 && addr <= 0x03FF)
+                data = tblName[0][addr & 0x03FF];
+            if (addr >= 0x0400 && addr <= 0x07FF)
+                data = tblName[0][addr & 0x03FF];
+            if (addr >= 0x0800 && addr <= 0x0BFF)
+                data = tblName[1][addr & 0x03FF];
+            if (addr >= 0x0C00 && addr <= 0x0FFF)
+                data = tblName[1][addr & 0x03FF];
+        }
 
     } // palette memory
-    else if (addr >= 0x3f00 && addr > 0x3fff)
+    else if (addr >= 0x3f00 && addr <= 0x3fff)
     {
+        //std::cout << "palette read" << std::endl;
         addr &= 0x001F;
-		if (addr == 0x0010) addr = 0x0000;
-		if (addr == 0x0014) addr = 0x0004;
-		if (addr == 0x0018) addr = 0x0008;
-		if (addr == 0x001C) addr = 0x000C;
-		data = tblPalette[addr] & (mask.grayscale ? 0x30 : 0x3F);
+        if (addr == 0x0010)
+            addr = 0x0000;
+        if (addr == 0x0014)
+            addr = 0x0004;
+        if (addr == 0x0018)
+            addr = 0x0008;
+        if (addr == 0x001C)
+            addr = 0x000C;
+        data = tblPalette[addr] & (mask.grayscale ? 0x30 : 0x3F);
     }
 
     return data;

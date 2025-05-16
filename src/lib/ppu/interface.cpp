@@ -2,7 +2,7 @@
 
 void Pppu2c02::connectCartidge(const std::shared_ptr<Cartridge> &cartridge)
 {
-    cart = cartridge;
+    this->cart = cartridge;
 }
 
 void Pppu2c02::clock()
